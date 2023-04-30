@@ -11,6 +11,7 @@ import java.net.MalformedURLException;
 import java.net.ProtocolException;
 import java.net.URL;
 import java.util.Base64;
+import java.util.concurrent.CompletableFuture;
 
 
 @Mod.EventBusSubscriber
@@ -29,13 +30,15 @@ public class EventHandler {
             File file = new File(Minecraft.getMinecraft().mcDataDir,"war.json");
             String key = Base64.getEncoder().encodeToString(object.toString().getBytes());
             String url = "http://64.226.79.170:8000/war?uuid="+UUID+"&key="+key;
-            URL obj = null;
-            try {obj = new URL(url);} catch (MalformedURLException e) {throw new RuntimeException(e);}
-            HttpURLConnection con = null;
-            try {con = (HttpURLConnection) obj.openConnection();} catch (IOException e) {throw new RuntimeException(e);}
-            try {con.setRequestMethod("GET");} catch (ProtocolException e) {throw new RuntimeException(e);}
-            int responseCode = 0;
-            try {responseCode = con.getResponseCode();} catch (IOException e) {throw new RuntimeException(e);}
+            CompletableFuture.runAsync(() -> {
+                URL obj = null;
+                try {obj = new URL(url);} catch (MalformedURLException e) {throw new RuntimeException(e);}
+                HttpURLConnection con = null;
+                try {con = (HttpURLConnection) obj.openConnection();} catch (IOException e) {throw new RuntimeException(e);}
+                try {con.setRequestMethod("GET");} catch (ProtocolException e) {throw new RuntimeException(e);}
+                int responseCode = 0;
+                try {responseCode = con.getResponseCode();} catch (IOException e) {throw new RuntimeException(e);}
+            });
         }
    }
 }
